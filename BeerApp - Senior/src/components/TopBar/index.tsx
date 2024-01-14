@@ -4,15 +4,17 @@ import MenuIcon from '@mui/icons-material/Menu';
 interface Props {
   drawerWidth: number;
   handleDrawerToggle: () => void;
+  location: string;
 }
 
-const TopBar = (props: Props) => {
+// Deconstruction of props, just to show it.
+const TopBar = ({drawerWidth, handleDrawerToggle, location}: Props) => {
   return (
     <AppBar
       position="fixed"
       sx={{
-        width: { sm: `calc(100% - ${props.drawerWidth}px)` },
-        ml: { sm: `${props.drawerWidth}px` },
+        width: { sm: `calc(100% - ${drawerWidth}px)` },
+        ml: { sm: `${drawerWidth}px` },
       }}
     >
       <Toolbar>
@@ -20,13 +22,13 @@ const TopBar = (props: Props) => {
           color="inherit"
           aria-label="open drawer"
           edge="start"
-          onClick={props.handleDrawerToggle}
+          onClick={handleDrawerToggle}
           sx={{ mr: 2, display: { sm: 'none' } }}
         >
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" noWrap component="div">
-          V
+          {location === '' ? 'Home' : location}
         </Typography>
       </Toolbar>
     </AppBar>

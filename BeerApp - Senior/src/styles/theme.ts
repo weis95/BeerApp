@@ -1,13 +1,17 @@
 import { createTheme } from '@mui/material/styles';
-import { green, blue } from '@mui/material/colors';
+
+// Took Busch Lights Colors
+
+const primary = '#314973'
+const secondary = '#00BCF1'
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: blue[800],
+      main: primary,
     },
     secondary: {
-      main: green[500],
+      main: secondary,
     },
   },
   components: {
@@ -15,6 +19,15 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           textDecoration: 'none',
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          "&:hover": {
+            backgroundColor: secondary,
+          },
         },
       },
     },

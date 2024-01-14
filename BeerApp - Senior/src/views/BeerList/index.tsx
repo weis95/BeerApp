@@ -5,6 +5,8 @@ import { Autocomplete, AutocompleteChangeReason, Avatar, FormControl, Grid, Inpu
 import SportsBar from '@mui/icons-material/SportsBar';
 import { useNavigate } from 'react-router-dom';
 import countries from '../../staticData/countries.json';
+import { useAppContext } from '../../providers/AppProvider';
+import { capitalizeFirstLetter } from '../../utils';
 
 const BeerList = () => {
   const navigate = useNavigate();
@@ -13,10 +15,12 @@ const BeerList = () => {
   const [country, setCountry] = useState<string | null>(null);
   const [page, setPage] = useState<number>(1);
   
+  const { setLocation } = useAppContext();
+
   const getParams = () => {
     const options: ApiParams = {
       sort: `${sort}:asc`,
-      per_page: 5,
+      per_page: 10,
       page,
       // better readability would be: if(country) options.by_country = country
       ...(country && {by_country: country})     
@@ -33,7 +37,10 @@ const BeerList = () => {
   // eslint-disable-next-line
   useEffect(fetchData.bind(this, setData, getParams()), [sort, page, country]);  
 
-  const onBeerClick = (id: string) => navigate(`/beer/${id}`);
+  const onBeerClick = (id: string, name: string) => {
+    setLocation(name) 
+    navigate(`/beer/${id}`)
+  };
   
   return (
     <article>
@@ -73,20 +80,20 @@ const BeerList = () => {
           </Grid>
           <List>
             {data.beers.map((beer) => (
-              <ListItemButton key={beer.id} onClick={onBeerClick.bind(this, beer.id)}>
+              <ListItemButton key={beer.id} onClick={onBeerClick.bind(this, beer.id, beer.name)}>
                 <ListItemAvatar>
                   <Avatar>
                     <SportsBar />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={`${beer.name} | ${beer.country} | ${beer.state}`} secondary={beer.brewery_type[0].toUpperCase() + beer.brewery_type.slice(1)}/>
+                <ListItemText primary={`${beer.name} | ${beer.country} | ${beer.state}`} secondary={capitalizeFirstLetter(beer.brewery_type)}/>
               </ListItemButton>
             ))}
             {data.beers.length === 0 && <p>No beers found</p>}
           </List>
           {data.beers.length !== 0 &&
             <Grid container justifyContent="flex-end">
-              <Pagination page={page} count={Math.ceil(data?.total / 5)} onChange={(event: ChangeEvent<unknown>, page: number) => setPage(page)} variant="outlined" />
+              <Pagination page={page} count={Math.ceil(data?.total / 10)} onChange={(event: ChangeEvent<unknown>, page: number) => setPage(page)} variant="outlined" />
             </Grid>
           }
         </main>

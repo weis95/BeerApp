@@ -15,6 +15,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import TopBar from '../TopBar';
+import { AppProvider } from '../../providers/AppProvider';
 
 const drawerWidth = 240;
 
@@ -24,6 +25,8 @@ interface Props {
 
 export default function ResponsiveDrawer(props: Props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  // Small design implementation, won't work if user clicks on link to /beer
+  const [location, setLocation] = React.useState("Home");
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -33,9 +36,9 @@ export default function ResponsiveDrawer(props: Props) {
     <>
       <Divider />
       <List>
-        <Link component={RouterLink} to={`/`}>
-          <ListItem disablePadding>
-            <ListItemButton>
+        <Link onClick={() => setLocation('Home')} component={RouterLink} to={`/`}>
+          <ListItem disablePadding >
+            <ListItemButton selected={location === 'Home'}>
               <ListItemIcon>
                 <HomeIcon />
               </ListItemIcon>
@@ -43,9 +46,9 @@ export default function ResponsiveDrawer(props: Props) {
             </ListItemButton>
           </ListItem>
         </Link>
-        <Link component={RouterLink} to={`/beer`}>
+        <Link onClick={() => setLocation('Beer List')} component={RouterLink} to={`/beer`}>
           <ListItem disablePadding>
-            <ListItemButton>
+            <ListItemButton selected={location !== 'Home' }>
               <ListItemIcon>
                 <SportsBar />
               </ListItemIcon>
@@ -58,49 +61,51 @@ export default function ResponsiveDrawer(props: Props) {
   );
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <TopBar drawerWidth={drawerWidth} handleDrawerToggle={handleDrawerToggle} />
-      <Box
-        component='nav'
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label='mailbox folders'
-      >
-        <Drawer
-          variant='temporary'
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true,
-          }}
+    <AppProvider setLocation={setLocation}>
+      <Box sx={{ display: 'flex' }}>
+        <TopBar location={location} drawerWidth={drawerWidth} handleDrawerToggle={handleDrawerToggle} />
+        <Box
+          component='nav'
+          sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+          aria-label='mailbox folders'
+        >
+          <Drawer
+            variant='temporary'
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{
+              keepMounted: true,
+            }}
+            sx={{
+              display: { xs: 'block', sm: 'none' },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            }}
+          >
+            {drawer}
+          </Drawer>
+          <Drawer
+            variant='permanent'
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            }}
+            open
+          >
+            {drawer}
+          </Drawer>
+        </Box>
+        <Box
+          component='main'
           sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            flexGrow: 1,
+            p: 3,
+            width: { sm: `calc(100% - ${drawerWidth}px)`, background: '#f7f7f7' },
           }}
         >
-          {drawer}
-        </Drawer>
-        <Drawer
-          variant='permanent'
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-          open
-        >
-          {drawer}
-        </Drawer>
+          <Toolbar />
+          {props.children}
+        </Box>
       </Box>
-      <Box
-        component='main'
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)`, background: '#f7f7f7' },
-        }}
-      >
-        <Toolbar />
-        {props.children}
-      </Box>
-    </Box>
+    </AppProvider>
   );
 }
