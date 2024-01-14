@@ -19,4 +19,9 @@ interface Beer {
   street: string;
 }
 
-export type { Beer };
+interface Response {
+  beers: Beer[];
+  total: number;
+}
+
+export type { Beer, Response };

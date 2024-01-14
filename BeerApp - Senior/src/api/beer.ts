@@ -10,9 +10,19 @@ const getBeerList = (params?: ApiParams) => axios.get(`${API}breweries/`, { para
  * @param size Int between 1 and 50. Default is 3.
  * @returns New promise with api call for random beer list.
  */
-const getRandomBeerList = (size = 3) =>
+const getRandomBeerList = (clear?: boolean) =>
   axios.get(`${API}breweries/random`, {
-    params: { size },
+    ...(clear && {headers: {
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+    }}),
+    params: { size: 10 },
+  },);
+
+const searchFavs = (ids: string[]) =>
+  axios.get(`${API}breweries/`, {
+    params: { by_ids: ids.join(',') },
   });
 
 const searchBeerList = (query: string, isAutoComplete = false) =>
@@ -22,4 +32,4 @@ const searchBeerList = (query: string, isAutoComplete = false) =>
 
 const getBeerMetaData = (params?: ApiParams) => axios.get(`${API}breweries/meta`, { params });
 
-export { getBeer, getBeerList, getRandomBeerList, searchBeerList, getBeerMetaData };
+export { getBeer, getBeerList, getRandomBeerList, searchFavs, searchBeerList, getBeerMetaData };
