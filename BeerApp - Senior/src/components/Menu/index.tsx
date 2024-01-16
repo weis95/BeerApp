@@ -17,6 +17,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import TopBar from '../TopBar';
 import { AppProvider } from '../../providers/AppProvider';
 
+// Seems like this should be in a exported style file instead of being passed as a prop.
 const drawerWidth = 240;
 
 interface Props {
@@ -25,7 +26,11 @@ interface Props {
 
 export default function ResponsiveDrawer(props: Props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  // Small design implementation, won't work if user clicks on link to /beer
+  /* 
+    Small design implementation, won't work if user clicks on link to /beer or refreshes page. 
+    Would prefer making routes into a json object or hashtable to deternime the location.
+    Hack and slash alternative, if else statement checking url path.
+  */
   const [location, setLocation] = React.useState("Home");
 
   const handleDrawerToggle = () => {

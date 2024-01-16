@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import countries from '../../staticData/countries.json';
 import { useAppContext } from '../../providers/AppProvider';
 import { capitalizeFirstLetter } from '../../utils';
+import styles from '../Home/Home.module.css';
 
 const BeerList = () => {
   const navigate = useNavigate();
@@ -20,7 +21,8 @@ const BeerList = () => {
   const getParams = () => {
     const options: ApiParams = {
       sort: `${sort}:asc`,
-      per_page: 10,
+      // 6 looks nice on macbook pro 13 inch, but would be better to make it responsive, check windown demonsions.
+      per_page: 6,
       page,
       // better readability would be: if(country) options.by_country = country
       ...(country && {by_country: country})     
@@ -43,62 +45,58 @@ const BeerList = () => {
   };
   
   return (
-    <article>
-      <section>
-        <header>
-          <h1>Beer List</h1>
-        </header>
-        <main>
-          <Grid container spacing={2}>
-            {/* Didn't make this responsive, since it wasn't stated in the assignment */}
-            <Grid item xs={12} lg={10}>
-              <Autocomplete
-                onChange={(event: SyntheticEvent<Element, Event>, value: string | null, reason: AutocompleteChangeReason) => onCountryChange(value)}
-                disablePortal
-                options={countries}
-                sx={{ width: 300 }}
-                renderInput={(params) => <TextField {...params} label="Country" />}
-              />
-            </Grid>
-            <Grid item xs={12} lg={2}>
-              <FormControl fullWidth>
-                <InputLabel>
-                  Sort
-                </InputLabel>
-                <Select
-                  value={sort}
-                  label="Age"
-                  onChange={(event: SelectChangeEvent) => setSort(event.target.value)}
-                  fullWidth
-                >
-                  <MenuItem value={"name"}>Name</MenuItem>
-                  <MenuItem value={"type"}>Type</MenuItem>
-                  <MenuItem value={"country"}>Country</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
+    <section>
+      <main className={styles.listContainer}>
+        {/* Consistency with Home file */}
+        <h3>Beer List</h3>
+        <Grid container spacing={2}>
+          {/* Didn't make this responsive, since it wasn't stated in the assignment */}
+          <Grid item xs={12} lg={4}>
+            <Autocomplete
+              onChange={(event: SyntheticEvent<Element, Event>, value: string | null, reason: AutocompleteChangeReason) => onCountryChange(value)}
+              disablePortal
+              options={countries}
+              renderInput={(params) => <TextField {...params} label="Country" />}
+            />
           </Grid>
-          <List>
-            {data.beers.map((beer) => (
-              <ListItemButton key={beer.id} onClick={onBeerClick.bind(this, beer.id, beer.name)}>
-                <ListItemAvatar>
-                  <Avatar>
-                    <SportsBar />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary={`${beer.name} | ${beer.country} | ${beer.state}`} secondary={capitalizeFirstLetter(beer.brewery_type)}/>
-              </ListItemButton>
-            ))}
-            {data.beers.length === 0 && <p>No beers found</p>}
-          </List>
-          {data.beers.length !== 0 &&
-            <Grid container justifyContent="flex-end">
-              <Pagination page={page} count={Math.ceil(data?.total / 10)} onChange={(event: ChangeEvent<unknown>, page: number) => setPage(page)} variant="outlined" />
-            </Grid>
-          }
-        </main>
-      </section>
-    </article>
+          <Grid item xs={12} lg={4}>
+            <FormControl fullWidth>
+              <InputLabel>
+                Sort
+              </InputLabel>
+              <Select
+                value={sort}
+                label="Age"
+                onChange={(event: SelectChangeEvent) => setSort(event.target.value)}
+                fullWidth
+              >
+                <MenuItem value={"name"}>Name</MenuItem>
+                <MenuItem value={"type"}>Type</MenuItem>
+                <MenuItem value={"country"}>Country</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+        <List>
+          {data.beers.map((beer) => (
+            <ListItemButton key={beer.id} onClick={onBeerClick.bind(this, beer.id, beer.name)}>
+              <ListItemAvatar>
+                <Avatar>
+                  <SportsBar />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText primary={`${beer.name} | ${beer.country} | ${beer.state}`} secondary={capitalizeFirstLetter(beer.brewery_type)}/>
+            </ListItemButton>
+          ))}
+          {data.beers.length === 0 && <p>No beers found</p>}
+        </List>
+        {data.beers.length !== 0 &&
+          <Grid container justifyContent="flex-end">
+            <Pagination page={page} count={Math.ceil(data?.total / 6)} onChange={(event: ChangeEvent<unknown>, page: number) => setPage(page)} variant="outlined" />
+          </Grid>
+        }
+      </main>
+    </section>
   );
 };
 

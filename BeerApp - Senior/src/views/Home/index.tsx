@@ -24,7 +24,7 @@ const Home = () => {
   useEffect(() => {
     /* 
       To make the offline experience even better I could edit the arrays as well, so the UI would still show
-      the action visually of adding & remove Favourites.
+      the action visually of adding & remove Favourites. UseEffect won't work for the offline mode.
     */
     sessionStorage.setItem('favourites', JSON.stringify(ids));
     
@@ -44,52 +44,50 @@ const Home = () => {
   }, [ids, query, refresh]);
 
   return (
-    <article>
-      <section>
-        <main>
-          <Paper>
-            <div className={styles.listContainer}>
-              <div className={styles.listHeader}>
-                <TextField value={query} onChange={(event: ChangeEvent<HTMLInputElement>) => setQuery(event.currentTarget.value)} label='Filter...' variant='outlined' />
-                <Button variant='contained' onClick={() => setRefresh(true)}>Reload list</Button>
-              </div>
-              <ul className={styles.list}>
-                {beerList.map((beer, index) => (
-                  <li key={index.toString()} className={styles.listItem}>
-                    <Link component={RouterLink} to={`/beer/${beer.id}`}>
-                      {beer.name}
-                    </Link>
-                    <Checkbox checked={ids.includes(beer.id)} value={beer.id} onChange={(event: ChangeEvent<HTMLInputElement>) => handleChange(event)}/>
-                  </li>
-                ))}
-              </ul>
+    <section>
+      <main>
+        <Paper>
+          <div className={styles.listContainer}>
+            <div className={styles.listHeader}>
+              <TextField value={query} onChange={(event: ChangeEvent<HTMLInputElement>) => setQuery(event.currentTarget.value)} label='Filter...' variant='outlined' />
+              <Button variant='contained' onClick={() => setRefresh(true)}>Reload list</Button>
             </div>
-          </Paper>
+            <ul className={styles.list}>
+              {beerList.map((beer, index) => (
+                <li key={index.toString()} className={styles.listItem}>
+                  <Link component={RouterLink} to={`/beer/${beer.id}`}>
+                    {beer.name}
+                  </Link>
+                  <Checkbox checked={ids.includes(beer.id)} value={beer.id} onChange={(event: ChangeEvent<HTMLInputElement>) => handleChange(event)}/>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Paper>
 
-          <Paper>
-            <div className={styles.listContainer}>
-              <div className={styles.listHeader}>
-                <h3>Favourites</h3>
-                <Button variant='contained' size='small' onClick={() => setIds([])}>
-                  Remove all items
-                </Button>
-              </div>
-              <ul className={styles.list}>
-                {favourites.map((beer, index) => (
-                  <li key={index.toString()} className={styles.listItem}>
-                    <Link component={RouterLink} to={`/beer/${beer.id}`}>
-                      {beer.name}
-                    </Link>
-                    <Button variant="outlined" color="error" onClick={() => setIds(ids.filter(item => item !== beer.id))}>Remove</Button>
-                  </li>
-                ))}
-                {!favourites.length && <p>No favourites</p>}
-              </ul>
+        <Paper>
+          <div className={styles.listContainer}>
+            <div className={styles.listHeader}>
+              <h3>Favourites</h3>
+              <Button variant='contained' size='small' onClick={() => setIds([])}>
+                Remove all items
+              </Button>
             </div>
-          </Paper>
-        </main>
-      </section>
-    </article>
+            <ul className={styles.list}>
+              {favourites.map((beer, index) => (
+                <li key={index.toString()} className={styles.listItem}>
+                  <Link component={RouterLink} to={`/beer/${beer.id}`}>
+                    {beer.name}
+                  </Link>
+                  <Button variant="outlined" color="error" onClick={() => setIds(ids.filter(item => item !== beer.id))}>Remove</Button>
+                </li>
+              ))}
+              {!favourites.length && <p>No favourites</p>}
+            </ul>
+          </div>
+        </Paper>
+      </main>
+    </section>
   );
 };
 
